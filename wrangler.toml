@@ -1,4 +1,4 @@
-name = "regulatory-wire"
+name = "bankregtracker"
 main = "worker.js"
 compatibility_date = "2026-06-01"
 
