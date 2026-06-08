@@ -59,12 +59,12 @@ const RSS_FEEDS = [
   //   account-wide bulletins:    https://content.govdelivery.com/accounts/<ACCT>/bulletins.rss
   // To get the exact code: open the agency's RSS/subscribe page and copy the feed link.
   { ag: 'FDIC',   type: 'Guidance', src: 'fdic.gov · FILs',      url: 'https://public.govdelivery.com/topics/USFDIC_19/feed.rss' },
+  { ag: 'FDIC',   type: 'Notice',   src: 'fdic.gov · press',     url: 'https://public.govdelivery.com/topics/USFDIC_26/feed.rss' },
   { ag: 'TREAS',  type: 'Notice',   src: 'treasury.gov · press', url: 'https://content.govdelivery.com/accounts/USTREAS/bulletins.rss' },
   { ag: 'FinCEN', type: 'Guidance', src: 'fincen.gov · updates', url: 'https://content.govdelivery.com/accounts/USFINCEN/bulletins.rss' },
   { ag: 'FHFA',   type: 'Notice',   src: 'fhfa.gov · news',      url: 'https://content.govdelivery.com/accounts/USFHFA/bulletins.rss' }
 
-  // Optional extra FDIC feed — press releases (topic USFDIC_26):
-  // { ag: 'FDIC', type: 'Notice', src: 'fdic.gov · press', url: 'https://public.govdelivery.com/topics/USFDIC_26/feed.rss' },
+  // public.govdelivery.com/topics/USFDIC_26/feed.rss now active above (FDIC press).
 ];
 
 /* ------------------------------------------------------------------ */
@@ -183,7 +183,13 @@ async function fetchFederalRegister(slug) {
 /* Layer 2: RSS / Atom                                                 */
 /* ------------------------------------------------------------------ */
 async function fetchRss(feed) {
-  const r = await fetch(feed.url, { headers: { 'User-Agent': UA, 'Accept': 'application/rss+xml, application/xml, text/xml' } });
+  const r = await fetch(feed.url, { headers: {
+    'User-Agent': UA,
+    // Broad, browser-like Accept. The trailing */* prevents 406 "Not Acceptable"
+    // rejections from endpoints that do strict content negotiation (e.g. some
+    // GovDelivery account feeds).
+    'Accept': 'application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.9, text/html;q=0.8, */*;q=0.7'
+  } });
   if (!r.ok) throw new Error('RSS HTTP ' + r.status);
   const xml = await r.text();
   return parseRss(xml, feed).slice(0, 20);
