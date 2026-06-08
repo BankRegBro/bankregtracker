@@ -1,5 +1,5 @@
 name = "regulatory-wire"
-main = "src/worker.js"
+main = "worker.js"
 compatibility_date = "2026-06-01"
 
 # Two daily rebuilds. Cron is ALWAYS UTC.
@@ -8,10 +8,11 @@ compatibility_date = "2026-06-01"
 [triggers]
 crons = ["0 11 * * *", "0 21 * * *"]
 
-# KV cache. Create the namespace (see README step 3), then paste its id below.
+# KV cache (dashboard namespace: "bankregtracker").
+# Leave binding = "WIRE_KV" — it must match env.WIRE_KV in worker.js.
 [[kv_namespaces]]
 binding = "WIRE_KV"
-id = "PASTE_KV_NAMESPACE_ID_HERE"
+id = "6fd4aabd9db24e24bcac68caf36cd43a"
 
 # Optional: see request/CPU usage in the dashboard.
 [observability]
